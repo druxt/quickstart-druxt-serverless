@@ -3,6 +3,14 @@ import opn from 'opn'
 const baseUrl = process.env.BASE_URL
 
 export default {
+  // Target full static build.
+  target: 'static',
+
+  // Ensure the root route is generated and crawled.
+  generate: {
+    routes: ['/']
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'quickstart-druxt-site',
@@ -43,8 +51,12 @@ export default {
   // DruxtJS: https://druxtjs.org
   druxt: {
     baseUrl,
+    // Enable the API proxy.
+    proxy: { api: true },
     // Disable deprecated Entity fields.
     entity: { components: { fields: false }},
+    // Disable the router middleware (redirect support) in favour of serverless.
+    router: { middleware: false },
     // Set the default theme to render Site regions.
     site: { theme: 'bartik' },
   },
