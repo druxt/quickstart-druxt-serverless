@@ -1,8 +1,12 @@
-# DruxtSite quickstart - Drupal with Tome sync
+# DruxtSite quickstart - Serverless Druxt
 
-> One click, Fully Decoupled Drupal Site starter-kit with Druxt.
+> One click, Fully Decoupled, Full Static, Serverlervess Drupal Site starter-kit with Druxt.
 
 DruxtSite connects Drupal to Nuxt via JSON:API to provide a framework for building a Fully Decoupled site.
+
+This template is configured to have full static content deployed to a CDN, without the need for a live Drupal backend.
+
+Develop, craft and create locally or in the cloud, deploy anywhere.
 
 This repostory provides a quickstart installation of:
 - Drupal 9 with Tome sync
