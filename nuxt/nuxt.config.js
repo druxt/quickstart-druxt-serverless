@@ -1,6 +1,6 @@
 import opn from 'opn'
 
-const baseUrl = process.env.BASE_URL
+const baseUrl = process.env.BASE_URL || 'http://quickstart-druxt-serverless.ddev.site'
 
 export default {
   // Target full static build.
@@ -41,12 +41,12 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    ['@nuxt/image', { domains: [baseUrl] }],
+    'druxt-site',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [
-    'druxt-site',
-  ],
+  modules: [],
 
   // DruxtJS: https://druxtjs.org
   druxt: {
