@@ -1,6 +1,6 @@
 # DruxtSite quickstart - Serverless Druxt
 
-> One click, Fully Decoupled, Full Static, Serverlervess Drupal Site starter-kit with Druxt.
+> One click, Fully Decoupled, Full Static, Serverless Drupal Site starter-kit with Druxt.
 
 DruxtSite connects Drupal to Nuxt via JSON:API to provide a framework for building a Fully Decoupled site.
 
