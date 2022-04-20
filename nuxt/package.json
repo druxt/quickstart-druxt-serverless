@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@nuxt/image": "^0.6.2",
-    "@nuxtjs/storybook": "4.3.0",
+    "@nuxtjs/storybook": "4.2.0",
     "opn": "6.0.0",
     "postcss": "8.4.12"
   }
