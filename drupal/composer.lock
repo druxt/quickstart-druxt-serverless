@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91d9e46a60dfd0acc91d49076356ad57",
+    "content-hash": "2c27209b35ce06265229ff6fde0c7e4c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1985,17 +1985,17 @@
         },
         {
             "name": "drupal/tome",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/tome.git",
-                "reference": "8.x-1.6"
+                "reference": "8.x-1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/tome-8.x-1.6.zip",
-                "reference": "8.x-1.6",
-                "shasum": "b24f3112af4a27a8746dcd077a40ac658bf459af"
+                "url": "https://ftp.drupal.org/files/projects/tome-8.x-1.7.zip",
+                "reference": "8.x-1.7",
+                "shasum": "be2486b47330e4c5641ad57b509285ed8aa53982"
             },
             "require": {
                 "drupal/core": "^8 || ^9",
@@ -2014,8 +2014,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1646489617",
+                    "version": "8.x-1.7",
+                    "datestamp": "1650988449",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2044,7 +2044,7 @@
         },
         {
             "name": "drupal/tome_base",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "require": {
                 "drupal/core": "^8 || ^9",
                 "drupal/tome": "^1"
@@ -2052,8 +2052,8 @@
             "type": "metapackage",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1646489617",
+                    "version": "8.x-1.7",
+                    "datestamp": "1650988449",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2082,7 +2082,7 @@
         },
         {
             "name": "drupal/tome_static",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "require": {
                 "drupal/core": "^8 || ^9",
                 "drupal/tome": "^1",
@@ -2091,8 +2091,8 @@
             "type": "metapackage",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1646489617",
+                    "version": "8.x-1.7",
+                    "datestamp": "1650988449",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2121,7 +2121,7 @@
         },
         {
             "name": "drupal/tome_sync",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "require": {
                 "drupal/core": "^8 || ^9",
                 "drupal/tome": "^1",
@@ -2130,8 +2130,8 @@
             "type": "metapackage",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1646489617",
+                    "version": "8.x-1.7",
+                    "datestamp": "1650988449",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -4592,16 +4592,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.4.37",
+            "version": "v4.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "b17d76d7ed179f017aad646e858c90a2771af15d"
+                "reference": "40790bdf293b462798882ef6da72bb49a4a6633a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/b17d76d7ed179f017aad646e858c90a2771af15d",
-                "reference": "b17d76d7ed179f017aad646e858c90a2771af15d",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/40790bdf293b462798882ef6da72bb49a4a6633a",
+                "reference": "40790bdf293b462798882ef6da72bb49a4a6633a",
                 "shasum": ""
             },
             "require": {
@@ -4634,7 +4634,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.37"
+                "source": "https://github.com/symfony/finder/tree/v4.4.41"
             },
             "funding": [
                 {
@@ -4650,7 +4650,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-02T09:41:36+00:00"
+            "time": "2022-04-14T15:36:10+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -6132,16 +6132,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.4.3",
+            "version": "v5.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "92043b7d8383e48104e411bc9434b260dbeb5a10"
+                "reference": "3c061a76bff6d6ea427d85e12ad1bb8ed8cd43e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/92043b7d8383e48104e411bc9434b260dbeb5a10",
-                "reference": "92043b7d8383e48104e411bc9434b260dbeb5a10",
+                "url": "https://api.github.com/repos/symfony/string/zipball/3c061a76bff6d6ea427d85e12ad1bb8ed8cd43e8",
+                "reference": "3c061a76bff6d6ea427d85e12ad1bb8ed8cd43e8",
                 "shasum": ""
             },
             "require": {
@@ -6198,7 +6198,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v5.4.3"
+                "source": "https://github.com/symfony/string/tree/v5.4.8"
             },
             "funding": [
                 {
@@ -6214,7 +6214,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-02T09:53:40+00:00"
+            "time": "2022-04-19T10:40:37+00:00"
         },
         {
             "name": "symfony/translation",
