@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Least-privilege: nothing here needs write access to the repo.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, intl, gd, xml, zip, opcache
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate and install Composer dependencies
+        working-directory: drupal
+        run: composer validate --strict && composer install --no-interaction --no-progress
+
+      # Not `npm run build`/`generate` - Druxt fetches the JSON:API index
+      # at build time, so building needs a live Drupal backend. That
+      # happens in test_generate, via .devtools/.
+      - name: Install Nuxt dependencies
+        working-directory: nuxt
+        run: npm install
+
+      - name: Create .env
+        run: cp .env.example .env
+
+  test_generate:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, intl, gd, xml, zip, opcache
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install Composer dependencies
+        working-directory: drupal
+        run: composer install --no-interaction --no-progress
+
+      - name: Assemble
+        working-directory: drupal
+        run: .devtools/assemble
+
+      - name: Provision
+        working-directory: drupal
+        run: .devtools/provision
+
+      - name: Start backend
+        working-directory: drupal
+        run: .devtools/start
+
+      - name: Install Nuxt dependencies
+        working-directory: nuxt
+        run: npm install
+
+      # This repo's whole point is full static output with no live
+      # backend at runtime - the meaningful test is that `nuxt generate`
+      # actually succeeds against a real backend and produces real
+      # static files.
+      - name: Generate full static output
+        working-directory: nuxt
+        run: npm run generate
+
+      - name: Verify static output
+        working-directory: nuxt
+        run: |
+          test -s dist/index.html
+          ls dist/_nuxt/*.js > /dev/null
+
+      - name: Upload static output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuxt-dist
+          path: nuxt/dist

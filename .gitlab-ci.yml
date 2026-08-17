@@ -1,0 +1,64 @@
+stages:
+  - build
+  - test
+
+variables:
+  PHP_APT_PACKAGES: "git unzip libsqlite3-dev libzip-dev libicu-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libonig-dev libxml2-dev"
+  PHP_EXTENSIONS: "mbstring pdo_sqlite intl gd xml zip opcache"
+
+cache:
+  paths:
+    - drupal/vendor/
+    - nuxt/node_modules/
+
+.php-node-setup:
+  image: php:8.4
+  before_script:
+    - apt-get update -yqq
+    - apt-get install -yqq $PHP_APT_PACKAGES python3 python3-setuptools build-essential
+    - docker-php-ext-install $PHP_EXTENSIONS
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=2.10.2
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    - export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" --no-use
+    - nvm install && nvm use
+
+build:
+  extends: .php-node-setup
+  stage: build
+  script:
+    # Validate and install Composer dependencies.
+    - cd drupal && composer validate --strict && composer install --no-interaction --no-progress
+
+    # Install Nuxt dependencies. Not `npm run build`/`generate` - Druxt
+    # fetches the JSON:API index at build time, so building needs a live
+    # Drupal backend. That happens in the test_generate job, via .devtools/.
+    - cd ../nuxt && npm install
+  artifacts:
+    paths:
+      - drupal/vendor
+      - nuxt/node_modules
+
+# This repo's whole point is full static output with no live backend at
+# runtime - the meaningful test is that `nuxt generate` actually succeeds
+# against a real backend and produces real static files, not a Cypress
+# suite exercising a server that (by design) nothing will be running
+# against in production.
+test_generate:
+  extends: .php-node-setup
+  stage: test
+  needs:
+    - build
+  script:
+    - cd drupal
+    - .devtools/assemble
+    - .devtools/provision
+    - .devtools/start
+    - cd ../nuxt
+    - npm install
+    - npm run generate
+    - test -s dist/index.html
+    - ls dist/_nuxt/*.js > /dev/null
+  artifacts:
+    when: on_failure
+    paths:
+      - nuxt/dist

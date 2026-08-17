@@ -1,0 +1,199 @@
+From d1643b24b17247b71b2c410617c1f6cf157bf47f Mon Sep 17 00:00:00 2001
+From: Stuart Clark <stu@rtclark.net>
+Date: Sat, 15 Aug 2026 00:49:37 +0000
+Subject: [PATCH] fix: subprocess commands built with a joined string, not an
+ argv array
+
+ExecutableFinderTrait::findExecutable() returns a single string like
+"drush -r /path -y" (joined with implode(' ', ...)). Every caller
+then does [$this->executable, 'some:command', ...] when building the
+argv array Symfony's Process expects - which puts that entire joined
+string in as ONE array element.
+
+Under Symfony Process 5+ (no more implicit shell-string mode), an
+array command has each element treated as a literal argv token, not
+shell-parsed. So the whole "drush -r /path -y" string gets treated
+as one (nonexistent) executable name:
+
+  sh: 1: exec: /path/drush.php -r /path/web -y: not found
+
+Confirmed via `drush tome:import`, which shells out to
+`tome:delete-content` internally and hits exactly this.
+
+Fix: findExecutable() now returns the argv array directly instead of
+joining it, and all 11 call sites across tome_sync/tome_static spread
+it into their command arrays with `[...$this->executable, ...]`
+instead of `[$this->executable, ...]`.
+---
+ modules/tome_base/src/CommandBase.php                |  4 ++--
+ modules/tome_base/src/ExecutableFinderTrait.php      | 12 ++++++++----
+ modules/tome_static/src/Commands/StaticCommand.php   |  4 ++--
+ modules/tome_sync/src/Commands/ExportCommand.php     |  4 ++--
+ modules/tome_sync/src/Commands/ImportCommand.php     | 10 +++++-----
+ .../tome_sync/src/Commands/ImportPartialCommand.php  |  4 ++--
+ 6 files changed, 21 insertions(+), 17 deletions(-)
+
+diff --git a/modules/tome_base/src/CommandBase.php b/modules/tome_base/src/CommandBase.php
+index 6b107f9..39400c0 100644
+--- a/modules/tome_base/src/CommandBase.php
++++ b/modules/tome_base/src/CommandBase.php
+@@ -25,9 +25,9 @@ class CommandBase extends Command {
+   protected $io;
+ 
+   /**
+-   * The current executable path.
++   * The current executable argv.
+    *
+-   * @var string
++   * @var string[]
+    */
+   protected $executable;
+ 
+diff --git a/modules/tome_base/src/ExecutableFinderTrait.php b/modules/tome_base/src/ExecutableFinderTrait.php
+index fc0e91f..03b7a92 100644
+--- a/modules/tome_base/src/ExecutableFinderTrait.php
++++ b/modules/tome_base/src/ExecutableFinderTrait.php
+@@ -12,13 +12,17 @@ use Symfony\Component\Console\Input\InputInterface;
+ trait ExecutableFinderTrait {
+ 
+   /**
+-   * Finds an executable string for the current process.
++   * Finds the executable argv for the current process.
+    *
+    * @param \Symfony\Component\Console\Input\InputInterface $input
+    *   The command input.
+    *
+-   * @return string
+-   *   An executable string, i.e. "drush @foo.bar" or "./vendor/bin/drupal".
++   * @return string[]
++   *   An array of argv tokens, e.g. ["drush", "@foo.bar"] or
++   *   ["./vendor/bin/drupal"]. Symfony's Process needs each token as its
++   *   own array element - joining them into one string and passing that
++   *   as a single element makes Process treat the whole string as one
++   *   (nonexistent) executable name.
+    */
+   protected function findExecutable(InputInterface $input) {
+     $args = [];
+@@ -33,7 +37,7 @@ trait ExecutableFinderTrait {
+     if (isset($_SERVER['PWD']) && !is_file($args[0]) && is_file($_SERVER['PWD'] . '/' . $args[0])) {
+       $args[0] = $_SERVER['PWD'] . '/' . $args[0];
+     }
+-    return implode(' ', $args);
++    return $args;
+   }
+ 
+ }
+diff --git a/modules/tome_static/src/Commands/StaticCommand.php b/modules/tome_static/src/Commands/StaticCommand.php
+index 56d963b..824c36e 100644
+--- a/modules/tome_static/src/Commands/StaticCommand.php
++++ b/modules/tome_static/src/Commands/StaticCommand.php
+@@ -129,7 +129,7 @@ class StaticCommand extends CommandBase {
+     $this->state->set(StaticGeneratorInterface::STATE_KEY_BUILDING, FALSE);
+ 
+     if ($options['run-server']) {
+-      $this->runCommand([$this->executable, 'tome:preview', '--port=' . $options['port']], NULL, NULL);
++      $this->runCommand([...$this->executable, 'tome:preview', '--port=' . $options['port']], NULL, NULL);
+     }
+ 
+     return 0;
+@@ -168,7 +168,7 @@ class StaticCommand extends CommandBase {
+     $commands = [];
+     $chunks = array_chunk($paths, $path_count);
+     foreach ($chunks as $chunk) {
+-      $command = [$this->executable, 'tome:static-export-path', implode(',', $chunk), '--return-json', '--process-count=' . $process_count, '--uri=' . $uri];
++      $command = [...$this->executable, 'tome:static-export-path', implode(',', $chunk), '--return-json', '--process-count=' . $process_count, '--uri=' . $uri];
+       $commands[] = $command;
+     }
+ 
+diff --git a/modules/tome_sync/src/Commands/ExportCommand.php b/modules/tome_sync/src/Commands/ExportCommand.php
+index 8963c56..c686e8a 100644
+--- a/modules/tome_sync/src/Commands/ExportCommand.php
++++ b/modules/tome_sync/src/Commands/ExportCommand.php
+@@ -92,7 +92,7 @@ class ExportCommand extends CommandBase {
+     if (!$options['yes'] && !$this->io()->confirm('The files in your export directory will be deleted and replaced.', FALSE)) {
+       return 0;
+     }
+-    if (!$this->runCommand([$this->executable, 'config:export', '-y'], NULL, NULL)) {
++    if (!$this->runCommand([...$this->executable, 'config:export', '-y'], NULL, NULL)) {
+       return 1;
+     }
+ 
+@@ -109,7 +109,7 @@ class ExportCommand extends CommandBase {
+       }
+     }
+     foreach (array_chunk($id_pairs, $options['entity-count']) as $chunk) {
+-      $commands[] = [$this->executable, 'tome:export-content', implode(',', $chunk)];
++      $commands[] = [...$this->executable, 'tome:export-content', implode(',', $chunk)];
+     }
+     $collected_errors = $this->runCommands($commands, $options['process-count'], 0);
+     if (!empty($collected_errors)) {
+diff --git a/modules/tome_sync/src/Commands/ImportCommand.php b/modules/tome_sync/src/Commands/ImportCommand.php
+index 2ac5025..c939217 100644
+--- a/modules/tome_sync/src/Commands/ImportCommand.php
++++ b/modules/tome_sync/src/Commands/ImportCommand.php
+@@ -111,7 +111,7 @@ class ImportCommand extends CommandBase {
+     }
+ 
+     $this->prepareConfigForImport();
+-    if (!$this->runCommand([$this->executable, 'config:import', '-y'], NULL, NULL)) {
++    if (!$this->runCommand([...$this->executable, 'config:import', '-y'], NULL, NULL)) {
+       return 1;
+     }
+ 
+@@ -122,11 +122,11 @@ class ImportCommand extends CommandBase {
+ 
+     $this->importer->importFiles();
+ 
+-    if (!$this->runCommand([$this->executable, 'cache:rebuild', '-y'], NULL, NULL)) {
++    if (!$this->runCommand([...$this->executable, 'cache:rebuild', '-y'], NULL, NULL)) {
+       return 1;
+     }
+ 
+-    if (!$this->runCommand([$this->executable, 'tome:import-complete'])) {
++    if (!$this->runCommand([...$this->executable, 'tome:import-complete'])) {
+       return 1;
+     }
+ 
+@@ -171,7 +171,7 @@ class ImportCommand extends CommandBase {
+       }
+       $commands = [];
+       foreach (array_chunk($chunk, $entity_count) as $names) {
+-        $commands[] = [$this->executable, 'tome:import-content', implode(',', $names)];
++        $commands[] = [...$this->executable, 'tome:import-content', implode(',', $names)];
+       }
+       $collected_errors = $this->runCommands($commands, $process_count, 0);
+       if (!empty($collected_errors)) {
+@@ -199,7 +199,7 @@ class ImportCommand extends CommandBase {
+   protected function deleteContent(array $names, $entity_count, $process_count) {
+     $commands = [];
+     foreach (array_chunk($names, $entity_count) as $names) {
+-      $commands[] = [$this->executable, 'tome:delete-content', implode(',', $names)];
++      $commands[] = [...$this->executable, 'tome:delete-content', implode(',', $names)];
+     }
+     $collected_errors = $this->runCommands($commands, $process_count, 0);
+     if (!empty($collected_errors)) {
+diff --git a/modules/tome_sync/src/Commands/ImportPartialCommand.php b/modules/tome_sync/src/Commands/ImportPartialCommand.php
+index e4c9522..6dfc4dc 100644
+--- a/modules/tome_sync/src/Commands/ImportPartialCommand.php
++++ b/modules/tome_sync/src/Commands/ImportPartialCommand.php
+@@ -115,7 +115,7 @@ class ImportPartialCommand extends ImportCommand {
+     }
+ 
+     $this->prepareConfigForImport();
+-    if (!$this->runCommand([$this->executable, 'config:import', '--partial', '-y'], NULL, NULL)) {
++    if (!$this->runCommand([...$this->executable, 'config:import', '--partial', '-y'], NULL, NULL)) {
+       return 1;
+     }
+ 
+@@ -135,7 +135,7 @@ class ImportPartialCommand extends ImportCommand {
+ 
+     $this->importer->importFiles();
+ 
+-    if (!$this->runCommand([$this->executable, 'tome:import-complete'])) {
++    if (!$this->runCommand([...$this->executable, 'tome:import-complete'])) {
+       return 1;
+     }
+ 
+-- 
+2.55.0
+

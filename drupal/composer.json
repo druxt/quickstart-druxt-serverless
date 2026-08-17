@@ -15,17 +15,19 @@
         }
     ],
     "require": {
-        "composer/installers": "2.2.0",
-        "drupal-tome/tome_drush": "dev-master",
-        "drupal/core-composer-scaffold": "9.4.5",
-        "drupal/core-project-message": "9.4.5",
-        "drupal/core-recommended": "9.4.5",
-        "drupal/druxt": "1.1.1",
-        "drupal/tome": "^1.7",
-        "drush/drush": "^11.1"
+        "composer/installers": "^2.2",
+        "cweagans/composer-patches": "^2.0@beta",
+        "drupal/bartik": "^1.1",
+        "drupal/core-composer-scaffold": "~11",
+        "drupal/core-project-message": "~11",
+        "drupal/core-recommended": "~11",
+        "drupal/druxt": "^1.2",
+        "drupal/seven": "^2.0",
+        "drupal/tome": "^1.16",
+        "drush/drush": "^13"
     },
     "require-dev": {
-        "drupal/core-dev": "9.4.5"
+        "drupal/core-dev": "~11"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -38,7 +40,15 @@
             "composer/installers": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "cweagans/composer-patches": true,
+            "php-http/discovery": true,
+            "symfony/runtime": true,
+            "phpstan/extension-installer": true,
+            "twig-cs-fixer/twig-cs-fixer": true
+        },
+        "platform": {
+            "ext-gd": "99.99.99"
         }
     },
     "extra": {
@@ -76,6 +86,14 @@
                 "  * Remove the plugin that prints this message:",
                 "      composer remove drupal/core-project-message"
             ]
+        },
+        "patches": {
+            "drupal/druxt": {
+                "Fix ViewsPathTranslatorSubscriber crash on views with no JSON:API route": "patches/druxt-views-path-translator-route-name.patch"
+            },
+            "drupal/tome": {
+                "Fix subprocess commands built with a joined string, not an argv array": "patches/tome-process-array-not-string.patch"
+            }
         }
     }
 }

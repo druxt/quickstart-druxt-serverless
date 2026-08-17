@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../.env' })
+
 import opn from 'opn'
 
 const baseUrl = process.env.BASE_URL || 'http://quickstart-druxt-serverless.ddev.site'
