@@ -51,13 +51,25 @@ export default {
   components: true,
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
+  // @nuxt/image is genuinely build-time for Nuxt 2 (its docs say
+  // buildModules) - it stays here.
   buildModules: [
     ['@nuxt/image', { domains: [baseUrl] }],
-    'druxt-site',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  //
+  // Druxt belongs in `modules`, NOT `buildModules`: Nuxt 2 does not load
+  // buildModules on `nuxt start`, so anything runtime the module
+  // registers (the @nuxtjs/proxy serverMiddleware behind
+  // `druxt.proxy.api`, axios defaults) silently vanishes from the local
+  // production preview. Deployed static output never has a server
+  // anyway - there the /jsonapi proxy is a host-level rewrite concern -
+  // but `npm start` locally should behave like dev does. Matches the
+  // druxt.js monorepo's own example placement.
+  modules: [
+    'druxt-site',
+  ],
 
   // DruxtJS: https://druxtjs.org
   druxt: {
