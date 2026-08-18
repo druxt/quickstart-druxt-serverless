@@ -67,6 +67,6 @@ login:
 delete destroy: reset
 
 reset: stop
-	rm -f $(DB_FILE) /tmp/quickstart-serverless-drupal-php-server.log /tmp/quickstart-serverless-drupal-php-server.pid > /dev/null 2>&1 || true
+	rm -f "$(DB_FILE)" /tmp/quickstart-serverless-drupal-php-server.log /tmp/quickstart-serverless-drupal-php-server.pid > /dev/null 2>&1 || true
 
 .DEFAULT_GOAL := build

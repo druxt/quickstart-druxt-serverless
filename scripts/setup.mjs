@@ -81,8 +81,7 @@ function reportExternalSetup(backend) {
     console.log('    ddev start')
     console.log('    ddev drupal-install')
     console.log('')
-  }
-  else {
+  } else {
     console.log('')
     console.log('  Provision the backend with its own tooling.')
   }

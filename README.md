@@ -6,11 +6,11 @@ DruxtSite connects Drupal to Nuxt via JSON:API to provide a framework for buildi
 
 This template builds to full static output, deployable to any CDN - Drupal and Tome only matter at build time. There's no live backend to run in production.
 
-This repostory provides a quickstart installation of:
+This repository includes:
+
 - Drupal 11 with Tome sync
 - Nuxt 2
 - DruxtSite
-
 
 ## Quickstart
 
@@ -28,10 +28,10 @@ them, it installs the frontend only and prints the next steps.
 `npm run generate` builds the full static site to `nuxt/dist/` - deploy
 that directory anywhere that serves static files.
 
-
 ## Getting started
 
 Requires [Node 16](.nvmrc) and one of:
+
 - PHP 8.4 (with the pdo_sqlite extension) + Composer on your machine
   (Drush comes with the backend - no global install needed), or
 - [DDEV](https://ddev.readthedocs.io) (Docker)
@@ -53,7 +53,7 @@ Requires [Node 16](.nvmrc) and one of:
    backend, and writes `BASE_URL` to `.env`.
 
    `make setup` works too, as do `make dev`, `make generate`, `make
-   info`, `make reset`, etc.
+info`, `make reset`, etc.
 
 2. Develop against the live backend:
 
@@ -107,7 +107,6 @@ Using DDEV? Keep `BASE_URL` as the `*.ddev.site` URL in `.env`
 3. `npm run dev` / `npm run generate` as above. The DDEV backend is
    never auto-started or auto-stopped from the npm scripts.
 
-
 ### Development Container (VS Code, Codespaces, DevPod)
 
 `.devcontainer/devcontainer.json` gives you a ready environment: Node
@@ -117,10 +116,10 @@ Docker-in-Docker needed.
 
 [![Open in DevPod!](https://devpod.sh/assets/open-in-devpod.svg)](https://devpod.sh/open#https://github.com/druxt/quickstart-druxt-serverless)
 
-| Tool | How |
-| --- | --- |
-| VS Code | Clone, open the folder, run **Dev Containers: Reopen in Container** |
-| GitHub Codespaces | On the repository page: **Code → Open with Codespaces** |
+| Tool                        | How                                                                                                                                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| VS Code                     | Clone, open the folder, run **Dev Containers: Reopen in Container**                                                                                                                                                                         |
+| GitHub Codespaces           | On the repository page: **Code → Open with Codespaces**                                                                                                                                                                                     |
 | [DevPod](https://devpod.sh) | Click the badge above, run `devpod up https://github.com/druxt/quickstart-druxt-serverless` (CLI), or add the same URL as a workspace source in DevPod's desktop app - all three read this same `devcontainer.json`, no extra config needed |
 
 First open runs `npm install` at the repository root, which triggers
@@ -136,28 +135,25 @@ npm run dev
 - Drupal backend: http://127.0.0.1:8888
 - Nuxt frontend: http://localhost:3000
 
-
 ## How to use it
 
 Your environment contains a pre-installed, pre-configured and running instance of Drupal with Tome, and Nuxt with the DruxtSite module enabled.
 
 In a Development Container (VS Code, Codespaces, DevPod), forwarded ports are accessible via your editor's **Ports** panel, or Codespaces' own URL pattern for forwarded ports.
 
-
 ## Services
 
-| Port | Service |
-| -- | -- |
-| `3000` | Nuxt.js |
+| Port   | Service   |
+| ------ | --------- |
+| `3000` | Nuxt.js   |
 | `3003` | Storybook |
-| `8888` | Drupal |
-
+| `8888` | Drupal    |
 
 ## Tools
 
 ### DDEV
 
-> DDEV is an open source tool that makes it dead simple to get local PHP development environments up and running within minutes. 
+> DDEV is an open source tool that makes it dead simple to get local PHP development environments up and running within minutes.
 
 DDEV is used to manage the Drupal instance, and provides a CLI that can be used to run common drupal tasks, including `ddev drush`.
 
@@ -173,13 +169,11 @@ Druxt integrates with the Nuxt Storybook module to provide zero-configuration, a
 
 To start Storybook, navigate to the `nuxt` directory and run `npx nuxt storybook`.
 
-
 ### Tome sync
 
 Tome sync is a static storage system for content, allowing you to keep your content up to date without the need of a database.
 
 See the project page for more details: https://www.drupal.org/project/tome
-
 
 ## License
 

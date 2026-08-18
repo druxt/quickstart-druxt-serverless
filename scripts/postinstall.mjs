@@ -19,7 +19,14 @@
  *   and the README instead of a failed install.
  */
 
-import { SPLASH, miseAvailable, printCommands, readEnv, toolAvailable } from './lib.mjs'
+import {
+  SPLASH,
+  backendInfo,
+  miseAvailable,
+  printCommands,
+  readEnv,
+  toolAvailable,
+} from './lib.mjs'
 import { runSetup } from './setup.mjs'
 
 function printNextSteps(hint) {
@@ -50,17 +57,28 @@ async function main() {
     return
   }
 
-  if (env.BASE_URL) {
+  // External/DDEV backend: not "already set up" - the frontend deps still
+  // need installing, and that path (npm install in nuxt/) needs neither
+  // PHP nor Composer, so it must not be blocked on them either. runSetup
+  // handles the external branch itself (frontend-only).
+  const backend = backendInfo(env)
+  const externalBackend = backend.url && !backend.managed
+
+  if (env.BASE_URL && !externalBackend) {
     console.log('  Already set up - backend, site and .env are in place.')
     console.log('')
     printCommands()
     return
   }
 
-  if (!toolAvailable('php') || !toolAvailable('composer')) {
+  if (!externalBackend && (!toolAvailable('php') || !toolAvailable('composer'))) {
     console.log('  Node side ready. The backend needs PHP 8.4 + Composer (or DDEV).')
     console.log('')
-    printNextSteps(miseAvailable() ? '    Install them (mise users: `mise install`), then:' : '    Install them, then:')
+    printNextSteps(
+      miseAvailable()
+        ? '    Install them (mise users: `mise install`), then:'
+        : '    Install them, then:'
+    )
     return
   }
 

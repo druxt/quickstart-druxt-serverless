@@ -132,3 +132,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 CHANGELOG.md
+
+# Vale style package, fetched by `vale sync` (local) or pinned+verified by
+# CI - never committed, see .vale.ini.
+/styles/
