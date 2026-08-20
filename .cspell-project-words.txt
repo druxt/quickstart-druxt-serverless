@@ -1,4 +1,4 @@
-Stanislav
+appserver
 behaviour
 bmewburn
 bootstrapvue
@@ -18,6 +18,9 @@ hverlin
 intelephense
 interruptible
 knip
+lando
+Lando
+Landofile
 libasound
 libfreetype
 libgbm
@@ -30,6 +33,7 @@ libsqlite
 libxss
 libxtst
 libzip
+lndo
 makedirs
 mbstring
 namelist
@@ -38,12 +42,15 @@ nuxt
 nuxtjs
 nvmrc
 opcache
+openssl
 openvscode
 phpsab
 phpstan
 repository
 setuptools
 shivammathur
+Stanislav
+starterkit
 startswith
 tokenless
 trixie
