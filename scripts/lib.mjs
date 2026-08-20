@@ -188,6 +188,7 @@ export function backendInfo(env = readEnv()) {
   return {
     managed: loopback,
     ddev: host.endsWith('.ddev.site'),
+    lando: host.endsWith('.lndo.site'),
     url,
     host,
     port: Number(parsed.port) || (parsed.protocol === 'https:' ? 443 : 80),
