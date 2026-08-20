@@ -1,8 +1,21 @@
 #!/bin/bash
 
-## Description: Install Drupal
+## Description: Installs Drupal with Tome.
 ## Usage: drupal-install
 ## Example: "ddev drupal-install"
 
+# Fail fast: a failed step must fail the whole install, not leave a
+# half-provisioned site that later commands "fix" silently.
+set -euo pipefail
+
+# Install composer dependencies.
 composer install
-drush -y tome:install
+
+# Install Drupal directly from the committed config (adopts its site UUID -
+# a plain `tome:install` does site-install then a separate config:import,
+# which fails with "Site UUID in source storage does not match the target
+# storage" since a fresh site-install generates its own random UUID first).
+drush -y site-install --existing-config
+
+# Import Tome-tracked content and files (config was already handled above).
+drush -y tome:import
