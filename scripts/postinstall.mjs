@@ -20,7 +20,9 @@
  */
 
 import {
+  IS_WINDOWS,
   SPLASH,
+  WINDOWS_HELP,
   backendInfo,
   miseAvailable,
   printCommands,
@@ -63,6 +65,16 @@ async function main() {
   // handles the external branch itself (frontend-only).
   const backend = backendInfo(env)
   const externalBackend = backend.url && !backend.managed
+
+  if (IS_WINDOWS && !externalBackend) {
+    console.log('  Node side ready.')
+    console.log('')
+    for (const line of WINDOWS_HELP.split('\n')) {
+      console.log(line ? `  ${line}` : '')
+    }
+    console.log('')
+    return
+  }
 
   if (env.BASE_URL && !externalBackend) {
     console.log('  Already set up - backend, site and .env are in place.')

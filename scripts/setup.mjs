@@ -28,9 +28,11 @@ import {
   backendInfo,
   acquireSetupLock,
   exitWithError,
+  IS_WINDOWS,
   miseAvailable,
   releaseSetupLock,
   setupLockContentionMessage,
+  WINDOWS_HELP,
   printCommands,
   readEnv,
   runDevtools,
@@ -144,6 +146,10 @@ async function doSetup({ splash }) {
     setupFrontend()
     reportExternalSetup(backend)
     return
+  }
+
+  if (IS_WINDOWS) {
+    throw new Error(WINDOWS_HELP)
   }
 
   checkPrerequisites()

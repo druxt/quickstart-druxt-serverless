@@ -20,6 +20,26 @@ export const ENV_FILE = path.join(ROOT, '.env')
 export const SETUP_LOCK_DIR = path.join(ROOT, '.setup.lock')
 
 /**
+ * What to tell a Windows user instead of failing midway: the local
+ * backend runs a PHP built-in server managed with nohup, lsof, ps and
+ * kill, and provisioning generates OAuth keys through OpenSSL, none of
+ * which works on Windows outside a Linux environment.
+ */
+export const WINDOWS_HELP = [
+  'The local PHP backend is not supported on Windows directly.',
+  '',
+  'Pick one of these instead - all three run this repo unchanged:',
+  '',
+  '  - Dev container: open this folder in VS Code and "Reopen in',
+  '    Container", or run `devpod up .`. Everything is set up for you.',
+  '  - WSL2: clone and run the same commands inside your Linux distro.',
+  '  - DDEV or Lando: start the container backend, put its URL in',
+  '    BASE_URL in .env, then run `npm run setup` for the frontend.',
+  '',
+  'See the Windows section of README.md.',
+].join('\n')
+
+/**
  * The setup lock: two setups in one checkout corrupt nuxt/node_modules
  * and drupal/vendor (two npm/composer processes race in the same dirs).
  * The realistic collision: a dev container's automatic post-create setup
@@ -80,7 +100,7 @@ export function setupLockContentionMessage() {
   )
 }
 
-const IS_WINDOWS = process.platform === 'win32'
+export const IS_WINDOWS = process.platform === 'win32'
 
 // npm is npm.cmd on Windows, and .cmd files must be spawned via a shell.
 const NPM = IS_WINDOWS ? 'npm.cmd' : 'npm'
