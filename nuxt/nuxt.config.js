@@ -1,6 +1,17 @@
-import opn from 'opn'
+require('dotenv').config({ path: '../.env' })
 
 const baseUrl = process.env.BASE_URL || 'http://quickstart-druxt-serverless.ddev.site'
+
+
+// Bound to 0.0.0.0, Nuxt reports the container-internal interface IP as
+// its listen URL - unreachable from the host. Rewrite the reported URL
+// only: the bind stays 0.0.0.0 so container port forwarding keeps working.
+const localhostListenURL = function () {
+  this.nuxt.hook('listen', (server, listener) => {
+    listener.host = 'localhost'
+    listener.url = `http://localhost:${listener.port}/`
+  })
+}
 
 export default {
   // Target full static build.
@@ -9,6 +20,17 @@ export default {
   // Ensure the root route is generated and crawled.
   generate: {
     routes: ['/']
+  },
+
+  // Nuxt 2 defaults to binding 'localhost' (loopback only), which is not
+  // reachable through devcontainer/DevPod port forwarding - the forwarded
+  // port maps to the container's network interface, not its loopback.
+  // Only affects `dev`/`start` (local preview) - `generate`'s static
+  // output has no server to bind.
+  // https://v2.nuxt.com/docs/configuration-glossary/configuration-server/
+  server: {
+    host: process.env.HOST || '0.0.0.0',
+    port: process.env.PORT || 3000
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -40,13 +62,26 @@ export default {
   components: true,
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
+  // @nuxt/image is genuinely build-time for Nuxt 2 (its docs say
+  // buildModules) - it stays here.
   buildModules: [
     ['@nuxt/image', { domains: [baseUrl] }],
-    'druxt-site',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  //
+  // Druxt belongs in `modules`, NOT `buildModules`: Nuxt 2 does not load
+  // buildModules on `nuxt start`, so anything runtime the module
+  // registers (the @nuxtjs/proxy serverMiddleware behind
+  // `druxt.proxy.api`, axios defaults) silently vanishes from the local
+  // production preview. Deployed static output never has a server
+  // anyway - there the /jsonapi proxy is a host-level rewrite concern -
+  // but `npm start` locally should behave like dev does. Matches the
+  // druxt.js monorepo's own example placement.
+  modules: [
+    'druxt-site',
+    localhostListenURL,
+  ],
 
   // DruxtJS: https://druxtjs.org
   druxt: {
@@ -63,10 +98,5 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-  },
-
-  hooks: {
-    // Open browser once build is done.
-    'build:done': () => opn('https://localhost:3000')
   }
 }

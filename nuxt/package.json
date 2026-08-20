@@ -10,13 +10,15 @@
   },
   "dependencies": {
     "core-js": "3.25.1",
-    "druxt-site": "^0.13.0",
-    "nuxt": "2.15.8"
+    "dotenv": "^16.0.3",
+    "druxt-site": "^0.14.3",
+    "nuxt": "2.15.8",
+    "vue-server-renderer": "^2.7.14",
+    "vue-template-compiler": "^2.7.14"
   },
   "devDependencies": {
     "@nuxt/image": "^0.7.1",
     "@nuxtjs/storybook": "4.2.0",
-    "opn": "6.0.0",
     "postcss": "8.4.16"
   }
 }
