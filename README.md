@@ -77,7 +77,8 @@ info`, `make reset`, etc.
    ```
 
    - Drupal backend: http://127.0.0.1:8888
-   - Nuxt frontend: http://localhost:3000
+   - Nuxt frontend: http://localhost:3000 (or the next free port up to
+     3009, which it prints)
    - One-time Drupal login: `npm run login`
 
 3. Build the full static site:
@@ -149,6 +150,18 @@ Then:
 3. `npm run dev` as above. `npm run drush -- <command>` is proxied
    through `lando drush`.
 
+### Troubleshooting
+
+#### Port 3000 is already in use
+
+`npm run dev` takes the next free port between 3000 and 3009 and says
+which one it picked, so the frontend address stays knowable.
+
+Naming a port yourself turns that off: `PORT=3005 npm run dev` uses 3005
+or fails, because a port you asked for is a decision rather than a
+default. If the whole range is busy, `npm run dev` says so instead of
+letting Nuxt fall back to a random port.
+
 ### Windows
 
 The local PHP backend does not run on Windows directly: it manages a PHP
@@ -187,7 +200,8 @@ npm run dev
 ```
 
 - Drupal backend: http://127.0.0.1:8888
-- Nuxt frontend: http://localhost:3000
+- Nuxt frontend: http://localhost:3000 (or the next free port up to
+  3009, which it prints)
 
 ## How to use it
 

@@ -68,8 +68,11 @@ minor is for.
 - Druxt modules moved from `buildModules` to `modules`. `buildModules`
   are not loaded by `nuxt start`, so the proxy and authentication
   registrations vanished in production while the dev server looked fine.
-- The dev server refuses to start on a taken port. Nuxt falls back to a
-  random one, which silently breaks anything pointed at 3000.
+- The dev server moves to the next free port between 3000 and 3009 when
+  3000 is taken, and prints which one it took. Nuxt's own fallback picks
+  a random port, so everything that advertised the frontend URL pointed
+  at the wrong place. A `PORT` you name is still yours - a busy one
+  fails, rather than moving somewhere you did not ask for.
 - Setup runs one at a time. A dev container attaches while its
   post-create setup is still installing, and a second setup started from
   that terminal corrupted `vendor/` and `node_modules/`.

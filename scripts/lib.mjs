@@ -226,6 +226,24 @@ export async function waitForPort(host, port, timeoutSeconds = 30) {
 }
 
 /**
+ * The ports the frontend may serve on. This starterkit has no OAuth
+ * consumer, so nothing has to be registered against them - the range
+ * just keeps the dev server's address predictable when 3000 is taken.
+ */
+export const FRONTEND_PORTS = Array.from({ length: 10 }, (_, index) => 3000 + index)
+
+/**
+ * The first of `ports` nothing is listening on, or null when they are
+ * all taken. Checked in order, so a free 3000 always wins.
+ */
+export async function firstFreePort(host, ports = FRONTEND_PORTS) {
+  for (const port of ports) {
+    if (!(await isPortOpen(host, port, 500))) return port
+  }
+  return null
+}
+
+/**
  * Run a command to completion, inheriting stdio. Throws on failure.
  */
 export function run(command, args, { cwd, allowFailure = false, env } = {}) {

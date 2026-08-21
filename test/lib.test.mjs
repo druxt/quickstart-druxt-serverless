@@ -18,8 +18,10 @@ import {
   backendInfo,
   ddevProjectHost,
   DRUPAL_DIR,
+  firstFreePort,
   foreground,
   foregroundNpm,
+  FRONTEND_PORTS,
   isPortOpen,
   MINIMUM_PHP,
   miseAvailable,
@@ -149,6 +151,55 @@ describe('the setup lock', () => {
       assert.equal(info.pid, null)
     } finally {
       fs.rmSync(SETUP_LOCK_DIR, { recursive: true, force: true })
+    }
+  })
+})
+
+describe('the frontend ports', () => {
+  it('are a contiguous run starting at 3000', () => {
+    assert.equal(FRONTEND_PORTS[0], 3000)
+    assert.equal(FRONTEND_PORTS.length, 10)
+    FRONTEND_PORTS.forEach((port, index) => assert.equal(port, 3000 + index))
+  })
+})
+
+describe('firstFreePort', () => {
+  /** Listen on an ephemeral port, and report which one. */
+  async function listen() {
+    const server = net.createServer()
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+    return { server, port: server.address().port }
+  }
+
+  /** A port nothing is listening on: take one, then give it back. */
+  async function freePort() {
+    const { server, port } = await listen()
+    await new Promise((resolve) => server.close(resolve))
+    return port
+  }
+
+  it('skips a port in use and returns the next free one', async () => {
+    const busy = await listen()
+    const free = await freePort()
+    try {
+      assert.equal(await firstFreePort('127.0.0.1', [busy.port, free]), free)
+    } finally {
+      busy.server.close()
+    }
+  })
+
+  it('takes the first free port, not just any free one', async () => {
+    const first = await freePort()
+    const second = await freePort()
+    assert.equal(await firstFreePort('127.0.0.1', [first, second]), first)
+  })
+
+  it('is null when every port is taken', async () => {
+    const busy = await listen()
+    try {
+      assert.equal(await firstFreePort('127.0.0.1', [busy.port]), null)
+    } finally {
+      busy.server.close()
     }
   })
 })

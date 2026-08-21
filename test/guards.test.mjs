@@ -14,11 +14,14 @@
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
+import http from 'node:http'
 import net from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { after, before, describe, it } from 'node:test'
+
+import { FRONTEND_PORTS } from '../scripts/lib.mjs'
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -41,6 +44,40 @@ function occupy() {
   })
 }
 
+/**
+ * Hold one named port, or resolve null when something else already
+ * holds it - either way the guard under test sees it as taken.
+ */
+function occupyPort(port) {
+  return new Promise((resolve) => {
+    const server = net.createServer()
+    server.once('error', () => resolve(null))
+    server.listen(port, '127.0.0.1', () => resolve(server))
+  })
+}
+
+/**
+ * A backend that answers the OAuth check the way a provisioned Drupal
+ * does: authorize redirects to the login form, and a bogus code is
+ * rejected as a bad code. dev.mjs gets past `checkOauth` and reaches
+ * its port handling, then fails trying to start Nuxt - there is no
+ * nuxt/ in the throwaway workspace, which is what ends each run.
+ */
+function stubBackend() {
+  return new Promise((resolve) => {
+    const server = http.createServer((request, response) => {
+      if (request.url.startsWith('/oauth/token')) {
+        response.writeHead(400, { 'content-type': 'application/json' })
+        response.end(JSON.stringify({ error: 'invalid_grant' }))
+        return
+      }
+      response.writeHead(302, { location: '/user/login' })
+      response.end()
+    })
+    server.listen(0, '127.0.0.1', () => resolve({ server, port: server.address().port }))
+  })
+}
+
 function writeEnv(lines) {
   fs.writeFileSync(path.join(workspace, '.env'), `${lines.join('\n')}\n`)
 }
@@ -48,7 +85,10 @@ function writeEnv(lines) {
 /** Async so an in-process stub server can still answer the child. */
 function run(script, { env = {}, stripPhp = false } = {}) {
   return new Promise((resolve) => {
-    const childEnv = { ...process.env, ...env }
+    // PORT picks which branch of dev.mjs runs, so never inherit it.
+    const childEnv = { ...process.env }
+    delete childEnv.PORT
+    Object.assign(childEnv, env)
     if (stripPhp) {
       // Keep node reachable, drop everything that could provide php.
       childEnv.PATH = path.dirname(process.execPath)
@@ -68,10 +108,14 @@ function run(script, { env = {}, stripPhp = false } = {}) {
 }
 
 describe('dev guards', () => {
-  it('refuses to start when the frontend port is taken', async () => {
-    const backend = await occupy()
+  it('refuses to start when PORT names a port that is taken', async () => {
+    const backend = await stubBackend()
     const frontend = await occupy()
-    writeEnv([`BASE_URL=http://127.0.0.1:${backend.port}`])
+    writeEnv([
+      `BASE_URL=http://127.0.0.1:${backend.port}`,
+      'OAUTH_CLIENT_ID=test-client',
+      `OAUTH_CALLBACK=http://localhost:${frontend.port}/callback`,
+    ])
 
     const { code, output } = await run('dev.mjs', { env: { PORT: String(frontend.port) } })
     backend.server.close()
@@ -79,8 +123,40 @@ describe('dev guards', () => {
 
     assert.equal(code, 1)
     assert.match(output, /already in use/)
-    // The consequence is the point: anything aimed at 3000 misses a
-    // frontend that silently moved to a random port.
+    // The consequence is the point: a random port breaks the OAuth callback.
+    assert.match(output, /random port/)
+    // A named port is the user's decision, so the way out is theirs too.
+    assert.match(output, /drop PORT/)
+  })
+
+  it('moves to the next free port when the default one is taken', async () => {
+    // The whole 3000-3009 range has a registered OAuth callback, so a
+    // busy 3000 is no reason to refuse to start. This holds the real
+    // port 3000: a machine already using it satisfies the case anyway.
+    const backend = await stubBackend()
+    const held = await occupyPort(FRONTEND_PORTS[0])
+    writeEnv([`BASE_URL=http://127.0.0.1:${backend.port}`, 'OAUTH_CLIENT_ID=test-client'])
+
+    const { output } = await run('dev.mjs')
+    if (held) held.close()
+    backend.server.close()
+
+    assert.match(output, /Port 3000 is in use - starting on 300[1-9] instead/)
+    // It carried on, and starts Nuxt on the port it announced.
+    assert.match(output, /Starting the Nuxt dev server -> http:\/\/localhost:300[1-9]/)
+  })
+
+  it('says so when every port in the range is taken', async () => {
+    const backend = await stubBackend()
+    const held = await Promise.all(FRONTEND_PORTS.map((port) => occupyPort(port)))
+    writeEnv([`BASE_URL=http://127.0.0.1:${backend.port}`, 'OAUTH_CLIENT_ID=test-client'])
+
+    const { code, output } = await run('dev.mjs')
+    for (const server of held) if (server) server.close()
+    backend.server.close()
+
+    assert.equal(code, 1)
+    assert.match(output, /Ports 3000-3009 are all in use/)
     assert.match(output, /random port/)
   })
 })
