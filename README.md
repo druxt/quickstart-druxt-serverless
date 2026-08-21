@@ -15,15 +15,26 @@ This repository includes:
 ## Quickstart
 
 ```bash
-npx giget@latest gh:druxt/quickstart-druxt-serverless#develop my-druxt-site --install
+npx giget@1 gh:druxt/quickstart-druxt-serverless#develop my-druxt-site --install
 cd my-druxt-site
 npm run generate
 ```
 
 `--install` runs the full setup automatically: frontend, Composer, and a
 local Drupal 11 + SQLite backend, installed straight from the committed
-Tome config and content. Needs PHP 8.4 and Composer on `PATH`. Without
-them, it installs the frontend only and prints the next steps.
+Tome config and content. It needs PHP 8.3 or newer and Composer on
+`PATH`. Without them it installs the frontend only, prints the next steps
+and still exits cleanly, so the install never fails on a machine that
+cannot run the backend.
+
+The `@1` is deliberate. giget 2 and newer call `fetch`, which needs Node
+18, and this site runs on [Node 16](.nvmrc) - an unpinned `giget@latest`
+fails there with `fetch is not defined`. giget 1 bundles a fetch
+polyfill, so one Node version covers both the download and the site.
+
+Prefer to start from your own repository? Use the GitHub
+[Use this template](https://github.com/druxt/quickstart-druxt-serverless/generate)
+button, then clone the repository it creates.
 
 `npm run generate` builds the full static site to `nuxt/dist/` - deploy
 that directory anywhere that serves static files.
@@ -32,7 +43,8 @@ that directory anywhere that serves static files.
 
 Requires [Node 16](.nvmrc) and one of:
 
-- PHP 8.4 (with the pdo_sqlite extension) + Composer on your machine
+- PHP 8.3 or newer (with the pdo_sqlite extension) + Composer on your
+  machine
   (Drush comes with the backend - no global install needed), or
 - [DDEV](https://ddev.readthedocs.io) or [Lando](https://lando.dev) (Docker)
 
