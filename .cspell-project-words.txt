@@ -1,3 +1,6 @@
+Lando
+Landofile
+Stanislav
 appserver
 behaviour
 bmewburn
@@ -12,6 +15,7 @@ drush
 druxt
 druxtjs
 endswith
+extensionless
 gdlib
 giget
 hverlin
@@ -19,8 +23,6 @@ intelephense
 interruptible
 knip
 lando
-Lando
-Landofile
 libasound
 libfreetype
 libgbm
@@ -49,7 +51,6 @@ phpstan
 repository
 setuptools
 shivammathur
-Stanislav
 starterkit
 startswith
 tokenless
