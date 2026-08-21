@@ -232,6 +232,18 @@ build:
 # suite exercising a server that (by design) nothing will be running
 # against in production.
 
+# Coverage reporting needs Node 20+, and these tests use only node:test
+# and node:assert, so they run on a modern Node with nothing installed.
+test_scripts:
+  stage: test
+  image: node:22
+  needs: []
+  script:
+    - npm run test:scripts:coverage
+  artifacts:
+    paths:
+      - coverage/scripts-lcov.info
+
 test_generate:
   extends: .php-node-setup
   stage: test
