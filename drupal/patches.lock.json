@@ -1,0 +1,29 @@
+{
+    "_hash": "ab06c2732e6997777e25ed4b8b189fc9757e5273cbcbe8612e783f7a8d18ebdb",
+    "patches": {
+        "drupal/druxt": [
+            {
+                "package": "drupal/druxt",
+                "description": "Fix ViewsPathTranslatorSubscriber crash on views with no JSON:API route",
+                "url": "patches/druxt-views-path-translator-route-name.patch",
+                "sha256": "fd5654d5cdcea769f3be061dd0e74e9fdf03af960b929959b8d806dbad147077",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/tome": [
+            {
+                "package": "drupal/tome",
+                "description": "Fix subprocess commands built with a joined string, not an argv array",
+                "url": "patches/tome-process-array-not-string.patch",
+                "sha256": "4cb12b1048c90d4e7a24b62fe589c6a94c82007c95478c613132030af9e7d867",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
