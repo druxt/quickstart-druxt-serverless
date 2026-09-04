@@ -1,0 +1,67 @@
+--- a/modules/tome_sync/src/Normalizer/ContentEntityNormalizer.php
++++ b/modules/tome_sync/src/Normalizer/ContentEntityNormalizer.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\tome_sync\Normalizer;
+ 
++use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseContentEntityNormalizer;
+ 
+ /**
+@@ -67,4 +68,11 @@
+     return $values;
+   }
+ 
++  /**
++   * {@inheritdoc}
++   */
++  public function getSupportedTypes(?string $format): array {
++    return [ContentEntityInterface::class => TRUE];
++  }
++
+ }
+--- a/modules/tome_sync/src/Normalizer/UserEntityNormalizer.php
++++ b/modules/tome_sync/src/Normalizer/UserEntityNormalizer.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\tome_sync\Normalizer;
+ 
++use Drupal\user\UserInterface;
++
+ /**
+  * Normalizes/denormalizes Drupal user entities into an array structure.
+  *
+@@ -28,4 +30,11 @@
+     return $values;
+   }
+ 
++  /**
++   * {@inheritdoc}
++   */
++  public function getSupportedTypes(?string $format): array {
++    return [UserInterface::class => TRUE];
++  }
++
+ }
+--- a/modules/tome_sync/src/Normalizer/PathAliasNormalizer.php
++++ b/modules/tome_sync/src/Normalizer/PathAliasNormalizer.php
+@@ -7,6 +7,7 @@
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\EntityTypeRepositoryInterface;
++use Drupal\path_alias\PathAliasInterface;
+ 
+ /**
+  * Normalizer for Path alias entities.
+@@ -100,4 +101,11 @@
+     return $entity;
+   }
+ 
++  /**
++   * {@inheritdoc}
++   */
++  public function getSupportedTypes(?string $format): array {
++    return [PathAliasInterface::class => TRUE];
++  }
++
+ }

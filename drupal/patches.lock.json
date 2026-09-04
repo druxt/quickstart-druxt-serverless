@@ -1,5 +1,5 @@
 {
-    "_hash": "ab06c2732e6997777e25ed4b8b189fc9757e5273cbcbe8612e783f7a8d18ebdb",
+    "_hash": "1601ef66d5629423dcef9720ba0331a6a4dfb14b8be5c5bb2692a5a4d68b64bc",
     "patches": {
         "drupal/druxt": [
             {
@@ -19,6 +19,16 @@
                 "description": "Fix subprocess commands built with a joined string, not an argv array",
                 "url": "patches/tome-process-array-not-string.patch",
                 "sha256": "4cb12b1048c90d4e7a24b62fe589c6a94c82007c95478c613132030af9e7d867",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "drupal/tome",
+                "description": "Declare normalizer supported types so entity-specific normalizers are used",
+                "url": "patches/tome-normalizer-supported-types.patch",
+                "sha256": "c857235b91961a030bfb0d63673fd2756aca4d72025a3463ddd8445d3bae0b06",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
