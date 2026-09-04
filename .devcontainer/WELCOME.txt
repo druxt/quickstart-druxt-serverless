@@ -1,0 +1,29 @@
+
+██████╗ ██████╗ ██╗   ██╗██╗  ██╗████████╗     ██╗███████╗
+██╔══██╗██╔══██╗██║   ██║╚██╗██╔╝╚══██╔══╝     ██║██╔════╝
+██║  ██║██████╔╝██║   ██║ ╚███╔╝    ██║        ██║███████╗
+██║  ██║██╔══██╗██║   ██║ ██╔██╗    ██║   ██   ██║╚════██║
+██████╔╝██║  ██║╚██████╔╝██╔╝ ██╗   ██║██╗╚█████╔╝███████║
+╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝╚═╝ ╚════╝ ╚══════╝
+
+Welcome to the Druxt serverless starterkit.
+
+Dependencies are installed, and the Drupal backend is provisioned and
+running on port 8888. This site builds to full static output, so Drupal
+only matters at build time - nothing needs to be running once it ships.
+
+Pick a task:
+
+  npm run dev             Nuxt dev server (port 3000)
+  npm run generate        Build the full static site into nuxt/dist
+  npm run info            What is running, and where
+
+  npm run start           Restart the backend (npm run stop halts it)
+  npm run login           Print a one-time Drupal login link
+  npm run reset           Wipe the database (npm run setup provisions it again)
+
+  npm run drush -- <cmd>  Run Drush, e.g. npm run drush -- core:status
+
+Both ports above are forwarded automatically.
+
+Happy building.

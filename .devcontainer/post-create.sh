@@ -57,6 +57,25 @@ echo 'extension=gd' | sudo tee "$CONF_DIR/gd.ini" > /dev/null
 php -r "exit(extension_loaded('gd') ? 0 : 1);" || { echo "gd extension failed to load" >&2; exit 1; }
 
 
+echo "==> Greeting new terminals with the welcome guide"
+# postAttachCommand output goes to whatever launched the container - DevPod
+# prints it to its own CLI log, outside the container - so someone opening a
+# terminal never sees it. The shell's own rc file is the only place that
+# reliably reaches them.
+#
+# Both rc files, because the base image ships bash and zsh and which one a
+# terminal opens depends on the client. Every interactive shell, not once: a
+# one-shot marker gets spent by whichever shell the editor opens first, which
+# is rarely the one the user is looking at.
+for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+  cat >> "$rc" <<SH
+
+case \$- in
+  *i*) cat "$(pwd)/.devcontainer/WELCOME.txt" ;;
+esac
+SH
+done
+
 echo "==> Trusting this repo's mise.toml"
 mise trust
 
@@ -66,3 +85,6 @@ echo "==> Running npm install (triggers the full setup pipeline)"
 # app's pinned Node 16 works fine but emits a wall of EBADENGINE
 # warnings that drowns the real setup output on first run.
 npm install --loglevel=error
+
+echo "==> Ready"
+cat .devcontainer/WELCOME.txt
