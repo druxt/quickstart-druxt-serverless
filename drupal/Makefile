@@ -57,7 +57,16 @@ debug:
 # Allow running Drush commands with `make drush <command>`.
 ifeq (drush,$(firstword $(MAKECMDGOALS)))
   DRUSH_RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(DRUSH_RUN_ARGS):;@:)
+  # Swallow the trailing goals so make does not try to build them. This uses a
+  # match-anything rule rather than `$(eval $(DRUSH_RUN_ARGS):;@:)`, because
+  # almost every Drush command is namespaced with a colon and make reads
+  # `tome:export:` as a rule of its own, failing with "target pattern contains
+  # no '%'". The rule only exists when `drush` is the first goal.
+  #
+  # Flags still cannot be passed as goals, because make claims them for itself:
+  # use `make drush DRUSH_RUN_ARGS="tome:export --yes"` for those.
+  %:
+	@:
 endif
 
 drush:
