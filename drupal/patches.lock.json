@@ -1,5 +1,5 @@
 {
-    "_hash": "1601ef66d5629423dcef9720ba0331a6a4dfb14b8be5c5bb2692a5a4d68b64bc",
+    "_hash": "20c9d7099ba28ec3c6dbf2708084b56edb93785dd1a39e9fc0c1aa0de8e73434",
     "patches": {
         "drupal/druxt": [
             {
@@ -29,6 +29,16 @@
                 "description": "Declare normalizer supported types so entity-specific normalizers are used",
                 "url": "patches/tome-normalizer-supported-types.patch",
                 "sha256": "c857235b91961a030bfb0d63673fd2756aca4d72025a3463ddd8445d3bae0b06",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "drupal/tome",
+                "description": "Sort the content index so its order does not depend on export order",
+                "url": "patches/tome-deterministic-content-index.patch",
+                "sha256": "0fa9e0a2c65059fc11208f9ad1f0f059e0e82959b42a1ccce196f55f02f52e98",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
