@@ -52,6 +52,11 @@
     }
   },
   "customizations": {
+    // Codespaces opens the welcome guide on first attach; other clients get it
+    // from the shell rc hook post-create.sh installs.
+    "codespaces": {
+      "openFiles": [".devcontainer/WELCOME.txt"]
+    },
     "vscode": {
       "settings": {
         // Absolute path to where the mise feature installs the binary
@@ -79,5 +84,6 @@
     }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "remoteUser": "vscode"
 }
