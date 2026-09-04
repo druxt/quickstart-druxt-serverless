@@ -29,6 +29,7 @@
     "link": [
         {
             "uri": "internal:\/admin\/content",
+            "resolvable_uri": "\/admin\/content",
             "title": null,
             "options": []
         }

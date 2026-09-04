@@ -55,9 +55,36 @@ debug:
 		(XDEBUG=1 ./.devtools/start && sleep 1 && [ "$$(./.devtools/info xdebug)" = "enabled" ] && echo "Enabled XDebug. Run 'make start' to disable." || (echo "Failed to enable XDebug." && exit 1))
 
 # Allow running Drush commands with `make drush <command>`.
+#
+# Every target this Makefile defines, so a Drush argument that collides with
+# one can be caught below.
+MAKE_TARGETS := help build assemble provision start stop info describe debug \
+                drush login delete destroy reset
+
 ifeq (drush,$(firstword $(MAKECMDGOALS)))
   DRUSH_RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(DRUSH_RUN_ARGS):;@:)
+
+  # Swallow the trailing goals so make does not try to build them. This uses a
+  # match-anything rule rather than `$(eval $(DRUSH_RUN_ARGS):;@:)`, because
+  # almost every Drush command is namespaced with a colon and make reads
+  # `tome:export:` as a rule of its own, failing with "target pattern contains
+  # no '%'". Make cannot have a colon in a target name at all, so a
+  # match-anything rule is the only way to accept those goals.
+  #
+  # It only applies to goals with no rule of their own, though, so a Drush
+  # argument that happens to share a name with a real target (`make drush help`)
+  # would run Drush *and* that target. Refuse that rather than quietly do both.
+  DRUSH_GOAL_CLASH := $(filter $(MAKE_TARGETS),$(DRUSH_RUN_ARGS))
+  ifneq ($(DRUSH_GOAL_CLASH),)
+    $(error `$(DRUSH_GOAL_CLASH)` is also a make target, so `make drush \
+      $(DRUSH_RUN_ARGS)` would run both. Use: make drush \
+      DRUSH_RUN_ARGS="$(DRUSH_RUN_ARGS)")
+  endif
+
+  # Flags cannot be goals either, because make claims them for itself, so
+  # `make drush tome:export --yes` never reaches Drush. Same escape hatch.
+  %:
+	@:
 endif
 
 drush:

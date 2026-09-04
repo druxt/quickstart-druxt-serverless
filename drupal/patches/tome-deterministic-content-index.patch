@@ -1,0 +1,23 @@
+--- a/modules/tome_sync/src/ContentIndexerTrait.php
++++ b/modules/tome_sync/src/ContentIndexerTrait.php
+@@ -78,6 +78,11 @@
+     }
+     $dependencies = array_values(array_unique($dependencies));
+     $index[TomeSyncHelper::getContentName($entity)] = $dependencies;
++    // Entities are indexed in whatever order they happen to be exported, which
++    // is not stable between installs. Sorting makes the file a function of its
++    // contents alone, so a diff shows what actually changed rather than the
++    // order two unrelated entities came back from the database in.
++    ksort($index);
+     ftruncate($handle, 0);
+     rewind($handle);
+     fwrite($handle, json_encode($index, JSON_PRETTY_PRINT));
+@@ -115,6 +120,8 @@
+     foreach ($index as &$dependencies) {
+       $dependencies = array_diff($dependencies, [$name]);
+     }
++    unset($dependencies);
++    ksort($index);
+     ftruncate($handle, 0);
+     rewind($handle);
+     fwrite($handle, json_encode($index, JSON_PRETTY_PRINT));

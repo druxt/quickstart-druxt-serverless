@@ -110,7 +110,9 @@
                 "Fix ViewsPathTranslatorSubscriber crash on views with no JSON:API route": "patches/druxt-views-path-translator-route-name.patch"
             },
             "drupal/tome": {
-                "Fix subprocess commands built with a joined string, not an argv array": "patches/tome-process-array-not-string.patch"
+                "Fix subprocess commands built with a joined string, not an argv array": "patches/tome-process-array-not-string.patch",
+                "Declare normalizer supported types so entity-specific normalizers are used": "patches/tome-normalizer-supported-types.patch",
+                "Sort the content index so its order does not depend on export order": "patches/tome-deterministic-content-index.patch"
             }
         }
     }

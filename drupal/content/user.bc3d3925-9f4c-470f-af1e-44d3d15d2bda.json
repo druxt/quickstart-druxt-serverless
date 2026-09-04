@@ -28,7 +28,7 @@
     "mail": [],
     "timezone": [
         {
-            "value": ""
+            "value": "UTC"
         }
     ],
     "status": [
@@ -38,14 +38,12 @@
     ],
     "created": [
         {
-            "value": "2022-02-15T00:11:50+00:00",
-            "format": "Y-m-d\\TH:i:sP"
+            "value": "2022-02-15T00:11:50+00:00"
         }
     ],
     "changed": [
         {
-            "value": "2022-02-15T00:11:50+00:00",
-            "format": "Y-m-d\\TH:i:sP"
+            "value": "2022-02-15T00:11:50+00:00"
         }
     ],
     "roles": [],
