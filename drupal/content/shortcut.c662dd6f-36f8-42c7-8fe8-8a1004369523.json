@@ -29,6 +29,7 @@
     "link": [
         {
             "uri": "internal:\/node\/add",
+            "resolvable_uri": "\/node\/add",
             "title": null,
             "options": []
         }
